@@ -1,0 +1,138 @@
+---
+title: "HW5"
+author: "Joel Essenburg"
+format: html
+embed-resources: true
+---
+
+## Exercise 1
+
+### a
+
+https://www.reddit.com/r/dataisbeautiful/comments/1i5q7h9/oc_billionaire_wealth_in_the_us_20202025/
+
+![](https://preview.redd.it/billionaire-wealth-in-the-u-s-2020-2025-v0-azdvwhghi5ee1.png?width=1080&crop=smart&auto=webp&s=02cea09a019d2999067fcf6aac42b60a37720024){width="40%"}
+
+### b
+
+The marks being used in this graph are lines. It appears that the name of the billionaire is mapped to color, but only for 4 of them. There are lots of same-colored lines that are not colored because they are not being highlighted in the graph.
+
+### c
+
+This graph is comparing the daily net worth of Elon Musk, Jeff Bezos, Mark Zuckerberg, Donald Trump, and 1018 other American billionaires. The main story here is how much larger the net worths of Musk, Bezos, and Zuckerberg are compared to the rest of the American Billionaires, and how insignificant Trump's is when compared to the rest of the American billionaires.
+
+### d
+
+The graphic is good because it is clean and does a good job at highlighting what it wants to show. It wants to emphasize the net worths of 4 specific billionaires among the masses, so it gives them color, leaving all the lines that are there but not as important as very dull. They can still be seen and thus compared to, but they are more in the background and not the first thing you notice.
+
+### e
+
+In Vega-Lite I think I would be able to graph all the lines and give the highlighted ones different colors. The axes are also something I know I could do.
+
+### f
+
+There are a few features in this graph that I don't know how to do in Vega-Lite. This includes making some of the lines have color while others don't, the names at the end of some of the lines, and the dotted line with the date Nov. 5.
+
+## Exercise 2
+
+### Exercise 2
+
+For this exercise, I couldn't figure out how to create the mean temp variable without the y-axis scaling by hundreds, so I did the mean max temp instead. It should display 12 months.
+
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "data": {
+    "url": "https://calvin-data304.netlify.app/data/weather-with-dates.csv"
+  },
+  "width": 600,
+  "height": 400,
+  "transform": [
+    {
+      "calculate": "['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][datum.month - 1]",
+      "as": "month_name"
+    },
+    {
+      "calculate": "(datum.temp_max + datum.temp_min) / 2",
+      "as": "mean_temp"
+    },
+  ],
+  "mark": "bar",
+  "encoding": {
+    "x": {
+      "field": "month_name",
+      "type": "ordinal",
+      "title": "Month",
+      "sort": [
+        "January", "February", "March", "April", "May", "June", 
+        "July", "August", "September", "October", "November", "December"
+      ]
+    },
+    "y": {
+      "aggregate": "mean",
+      "field": "temp_max",
+      "type": "quantitative",
+      "title": "Mean Max Temperature (°C)"
+    },
+    "color": {"field": "month_name", 
+    "type": "nominal",
+    "sort": [
+        "January", "February", "March", "April", "May", "June", 
+        "July", "August", "September", "October", "November", "December"
+      ]
+    }
+  }
+}
+
+### Exercise 3
+
+It appears to be rainiest in Seattle during December, and the sunniest during August.
+
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "data": {
+    "url": "https://calvin-data304.netlify.app/data/weather-with-dates.csv"
+  },
+  "width": 600,
+  "height": 400,
+  "transform": [
+    {
+      "calculate": "['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][datum.month - 1]",
+      "as": "month_name"
+    },
+    {
+      "aggregate": [
+        {
+          "op": "count",
+          "field": "weather",
+          "as": "weather_count"
+        }
+      ],
+      "groupby": ["month_name", "weather"]
+    }
+  ],
+  "mark": "bar",
+  "encoding": {
+    "x": {
+      "field": "month_name",
+      "type": "ordinal",
+      "title": "Month",
+      "sort": [
+        "January", "February", "March", "April", "May", "June", 
+        "July", "August", "September", "October", "November", "December"
+      ]
+    },
+    "y": {
+      "field": "weather_count",
+      "type": "quantitative",
+      "title": "Number of Weather Events"
+    },
+    "color": {
+      "field": "weather",
+      "type": "nominal",
+      "title": "Weather Type"
+    },
+  }
+}
+
+
+
