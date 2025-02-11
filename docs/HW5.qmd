@@ -39,100 +39,12 @@ There are a few features in this graph that I don't know how to do in Vega-Lite.
 
 For this exercise, I couldn't figure out how to create the mean temp variable without the y-axis scaling by hundreds, so I did the mean max temp instead. It should display 12 months.
 
-{
-  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-  "data": {
-    "url": "https://calvin-data304.netlify.app/data/weather-with-dates.csv"
-  },
-  "width": 600,
-  "height": 400,
-  "transform": [
-    {
-      "calculate": "['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][datum.month - 1]",
-      "as": "month_name"
-    },
-    {
-      "calculate": "(datum.temp_max + datum.temp_min) / 2",
-      "as": "mean_temp"
-    },
-  ],
-  "mark": "bar",
-  "encoding": {
-    "x": {
-      "field": "month_name",
-      "type": "ordinal",
-      "title": "Month",
-      "sort": [
-        "January", "February", "March", "April", "May", "June", 
-        "July", "August", "September", "October", "November", "December"
-      ]
-    },
-    "y": {
-      "aggregate": "mean",
-      "field": "temp_max",
-      "type": "quantitative",
-      "title": "Mean Max Temperature (°C)"
-    },
-    "color": {"field": "month_name", 
-    "type": "nominal",
-    "sort": [
-        "January", "February", "March", "April", "May", "June", 
-        "July", "August", "September", "October", "November", "December"
-      ]
-    }
-  }
-}
+![](5.1.png)
 
 ### Exercise 3
 
 It appears to be rainiest in Seattle during December, and the sunniest during August.
 
-{
-  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-  "data": {
-    "url": "https://calvin-data304.netlify.app/data/weather-with-dates.csv"
-  },
-  "width": 600,
-  "height": 400,
-  "transform": [
-    {
-      "calculate": "['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][datum.month - 1]",
-      "as": "month_name"
-    },
-    {
-      "aggregate": [
-        {
-          "op": "count",
-          "field": "weather",
-          "as": "weather_count"
-        }
-      ],
-      "groupby": ["month_name", "weather"]
-    }
-  ],
-  "mark": "bar",
-  "encoding": {
-    "x": {
-      "field": "month_name",
-      "type": "ordinal",
-      "title": "Month",
-      "sort": [
-        "January", "February", "March", "April", "May", "June", 
-        "July", "August", "September", "October", "November", "December"
-      ]
-    },
-    "y": {
-      "field": "weather_count",
-      "type": "quantitative",
-      "title": "Number of Weather Events"
-    },
-    "color": {
-      "field": "weather",
-      "type": "nominal",
-      "title": "Weather Type"
-    },
-  }
-}
-
+![](5.2.png)
 
 
