@@ -1,0 +1,92 @@
+---
+title: "HW6"
+author: "Joel Essenburg"
+format: html
+embed-resources: true
+---
+
+## Exercise 1
+
+### a
+
+The most interesting lesson Tufte offered me in this chapter was that there are types of data that would be better displayed in tables, such as small, noncomparative, highly labeled data sets. I thought that data was supposed to be used from a table to make a graph, but Tufte says that in some cases, it's better to just leave the data in table form in order to visualize it in the best way.
+
+### b
+
+![](/rprojects/jse6/Data304/docs/map.png)
+I found this graphic on page 32. I chose it because it caught my eye with how old it looked, and even appeared hand-drawn. It looks like the x-axis is associated with year, the y-axis is associated with millions of pounds, and color is associated with whether it's imports or exports. Given what we know so far, the only thing I don't know how to do in Vega-Lite is fill color the middle of the two lines. With this graphic, Tufte to illustrate the early evolution of time-series plots and how they deviated from just tables. 
+
+## Exercise 2
+
+One thing I learned was that bar charts must have a zero baseline. I'm very accustomed to making graphs with a zero baseline, and just recently discovered how there are some graphs that can be visualized better without a zero baseline. It's interesting to see that for some graphs, like bar charts, a zero baseline is a necessity. Another thing I learned was to practice presenting your graph before actually presenting it. If you practice presenting your graph, you may find yourself saying that things can be ignored or that some things have to be over explained when it could be included in the graph, and you can improve the graph in this way. 
+
+## Exercise 3
+
+### Step 1
+
+The bar graph doesn't start at 0, it's hard to distinguish between the bars and line when they're overlayed, and the bars are hard to compare when there's space in between them. 
+
+### Step 2
+
+In order to overcome these, I would scale the completion rate axis to start at 0, scale the response rate axis so that the line appears above the bars, and remove the space in between the bars. 
+
+### Step 3
+
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "data": {
+    "values": [
+      {"Date": "Q1-2017", "Completion Rate": 0.91, "Response Rate": 0.023},
+      {"Date": "Q2-2017", "Completion Rate": 0.93, "Response Rate": 0.018},
+      {"Date": "Q3-2017", "Completion Rate": 0.91, "Response Rate": 0.028},
+      {"Date": "Q4-2017", "Completion Rate": 0.89, "Response Rate": 0.023},
+      {"Date": "Q1-2018", "Completion Rate": 0.84, "Response Rate": 0.034},
+      {"Date": "Q2-2018", "Completion Rate": 0.88, "Response Rate": 0.027},
+      {"Date": "Q3-2018", "Completion Rate": 0.91, "Response Rate": 0.026},
+      {"Date": "Q4-2018", "Completion Rate": 0.87, "Response Rate": 0.039},
+      {"Date": "Q1-2019", "Completion Rate": 0.83, "Response Rate": 0.028}
+    ]
+  },
+  "width": 600,
+  "height": 400,
+  "layer": [
+    {
+      "mark": {
+          "type": "line", 
+          "color": "orange", 
+          "point": true
+        },
+      "encoding": {
+        "x": {
+          "field": "Date", 
+          "type": "ordinal", 
+          "title": "Quarter"
+        },
+        "y": {
+          "field": "Completion Rate",
+          "type": "quantitative"
+        }
+      }
+    },
+    {
+      "mark": {
+        "type": "bar", 
+        "color": "blue"
+      },
+      "encoding": {
+        "x": {
+          "field": "Date", 
+          "type": "ordinal"
+        },
+        "y": {
+          "field": "Response Rate",
+          "type": "quantitative",
+          "scale": {"domain": [0, 0.05]}
+        }
+      }
+    }
+  ],
+  "resolve": {"scale": {"y": "independent"}}
+}
+
+I took Knaflic's advice and made sure the bars had a zero baseline. 
