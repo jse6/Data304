@@ -1,0 +1,180 @@
+---
+title: "HW7"
+author: "Joel Essenburg"
+format: html
+embed-resources: true
+code-tools: true
+---
+
+```{r}
+library(vegabrite)
+```
+
+## Exercise 1
+
+### a
+
+- bar charts start at 0
+
+- you can save horizontal space by placing bars closer together and rotating labels, or swapping the x and y axes
+
+- we must pay attention to the order in which the bars are arranged
+
+- we should only rearrange bars when there is no natural ordering to the categories the bars represent  
+
+- you can use a grouped bar chart to visualize two categorical variables at the same time
+
+- showing separate bar plots can be easier to read than grouped bars
+
+- stacking bars is useful when the sum of the amounts represented by the individual stacked bars is a meaningful amount
+
+### b
+
+It is not advised to use a bar chart when the data doesn't need to start at 0 because bar charts need to start at 0 and this can become impractical and obscure key features.
+
+### c
+
+A couple alternatives to bar charts are dot plots and heatmaps. 
+
+### d
+
+Wilke says that stacking bars is more useful when the sum of the amounts represented by the individual stacked bars is in itself a meaningful amount. Stacking bars is also useful when the individual bars represent counts. 
+
+### e
+
+```{r}
+movies_data <- read_csv("cow-movies.csv")
+
+as_vegaspec(list(
+  `$schema` = "https://vega.github.io/schema/vega-lite/v5.json",
+  data = list(
+    values = movies_data
+  ),
+  width = 600,
+  height = 400,
+  mark = "bar",
+  encoding = list(
+    x = list(
+      field = "amount",
+      type = "quantitative",
+      title = "Weekend Gross (USD)"
+    ),
+    y = list(
+      field = "title",
+      type = "nominal",
+      sort = list("-x"),
+      title = "Movie"
+    )
+  )
+))
+```
+
+### f
+
+```{r}
+income_data <- read_csv("cow-income.csv")
+
+as_vegaspec(list(
+  `$schema` = "https://vega.github.io/schema/vega-lite/v5.json",
+  data = list(
+    values = income_data
+  ),
+  width = 800,
+  height = 400,
+  mark = "bar",
+  encoding = list(
+    x = list(
+      field = "race",
+      type = "nominal",
+      title = "Race",
+      axis = list(labelAngle = 0)
+    ),
+    y = list(
+      field = "median_income",
+      type = "quantitative",
+      title = "Median Income (USD)"
+    ),
+    xOffset = list(
+      field = "age",
+      type = "nominal",
+      title = "Age (years)"
+    ),
+    color = list(
+      field = "age",
+      type = "nominal",
+      title = "Age (years)"
+    )
+  )
+))
+```
+
+```{r}
+as_vegaspec(list(
+  `$schema` = "https://vega.github.io/schema/vega-lite/v5.json",
+  data = list(
+    values = income_data
+  ),
+  columns = 3,
+  facet = list(
+    field = "race",
+    type = "nominal",
+    title = "Race"
+  ),
+  spec = list(
+    width = 150,
+    height = 200,
+    mark = "bar",
+    encoding = list(
+      x = list(
+        field = "age",
+        type = "ordinal",
+        title = "Age Group"
+      ),
+      y = list(
+        field = "median_income",
+        type = "quantitative",
+        title = "Median Income (USD)"
+      ),
+      color = list(
+        field = "age",
+        type = "ordinal",
+        title = "Age (Years)",
+        legend = NULL
+      )
+    )
+  )
+))
+```
+
+### g
+
+```{r}
+gapminder_data <- read_csv("cow-gapminder.csv")
+
+as_vegaspec(list(
+  `$schema` = "https://vega.github.io/schema/vega-lite/v5.json",
+  data = list(
+    values = gapminder_data
+  ),
+  transform = list(
+    list(
+      filter = "datum.year == 2007") 
+  ),
+  width = 600,
+  height = 2000,
+  mark = "point",
+  encoding = list(
+    x = list(
+      field = "lifeExp",
+      type = "quantitative",
+      title = "Life Expectancy (Years)"
+    ),
+    y = list(
+      field = "country",
+      type = "nominal",
+      title = "Country"
+    )
+  )
+))
+```
+
