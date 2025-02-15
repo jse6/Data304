@@ -43,12 +43,10 @@ Wilke says that stacking bars is more useful when the sum of the amounts represe
 ### e
 
 ```{r}
-movies_data <- read_csv("cow-movies.csv")
-
 as_vegaspec(list(
   `$schema` = "https://vega.github.io/schema/vega-lite/v5.json",
   data = list(
-    values = movies_data
+    url = "https://calvin-data304.netlify.app/data/cow-movies.csv" 
   ),
   width = 600,
   height = 400,
@@ -72,12 +70,10 @@ as_vegaspec(list(
 ### f
 
 ```{r}
-income_data <- read_csv("cow-income.csv")
-
 as_vegaspec(list(
   `$schema` = "https://vega.github.io/schema/vega-lite/v5.json",
   data = list(
-    values = income_data
+    url = "https://calvin-data304.netlify.app/data/cow-income.csv" 
   ),
   width = 800,
   height = 400,
@@ -111,8 +107,8 @@ as_vegaspec(list(
 ```{r}
 as_vegaspec(list(
   `$schema` = "https://vega.github.io/schema/vega-lite/v5.json",
-  data = list(
-    values = income_data
+ data = list(
+    url = "https://calvin-data304.netlify.app/data/cow-income.csv" 
   ),
   columns = 3,
   facet = list(
@@ -149,12 +145,10 @@ as_vegaspec(list(
 ### g
 
 ```{r}
-gapminder_data <- read_csv("cow-gapminder.csv")
-
 as_vegaspec(list(
   `$schema` = "https://vega.github.io/schema/vega-lite/v5.json",
   data = list(
-    values = gapminder_data
+    url = "https://calvin-data304.netlify.app/data/cow-gapminder.csv" 
   ),
   transform = list(
     list(
@@ -177,4 +171,133 @@ as_vegaspec(list(
   )
 ))
 ```
+
+## Exercise 2
+
+### a
+
+Video watched
+
+### b
+
+- the audience should be able to decode the contents of your graph to get an accurate sense of what the original underlying data is and what it is saying
+
+- sometimes it's worth showing the baseline (0), but not always
+
+- a good order to follow is layering information, highlighting the things you want to pay attention to, and repeating design elements
+
+### c
+
+The figures in the video that come from Chapter 1 are the one of Napoleon's army in Russia, and I'm not 100% on this one but I think the second one is the globe map.
+
+## Exercise 3
+
+### a
+
+In Vega-Lite, to make a heat map you must set "mark": "rect".
+
+### b
+
+Figure 6.14
+
+```{r}
+as_vegaspec(list(
+  `$schema` = "https://vega.github.io/schema/vega-lite/v5.json",
+  data = list(
+    url = "https://calvin-data304.netlify.app/data/cow-internet2.csv"
+  ),
+  width = 600,
+  height = 400,
+  mark = "rect",
+  encoding = list(
+    x = list(
+      field = "year",
+      type = "ordinal",
+      title = "Year"
+    ),
+    y = list(
+      field = "country",
+      type = "nominal",
+      sort = list(
+        field = "users",
+        order = "descending",
+        op = "max",
+        condition = list(
+          field = "year",
+          test = "datum.year == 2016" 
+        )
+      ),
+      title = "Country"
+    ),
+    color = list(
+      field = "users",
+      type = "quantitative",
+      title = "Internet Users / 100 People",
+      scale = list(
+        scheme = "blues"
+      ) 
+    )
+  )
+))
+```
+
+### c
+
+A possible problem with heatmaps is that many times it's hard to tell slight differences and similarities in color. 
+
+### d
+
+The problem from earlier is not an issue anymore because the slight differences don't matter as much as the overall and bigger differences. It's a different message that this heatmap is trying to convey, showing more of a bigger picture scenario. It's less of an issue in the figure I made because that figure is also trying to show bigger picture trends as opposed to identifying individual data points as colors.
+
+## Exercise 4
+
+### a
+
+Healy says that pie charts are harder to read because we are better at decoding lengths than decoding angles and relative areas. 
+
+### b
+
+While Healy advocates against pie charts, Wilke is more indifferent, insisting that none of the visualizations are consistently superior over the other, and that there can be situations where a pie chart is a better visualization for a given dataset. For example, Wilke says that pie charts work well when the goal is to emphasize simple fractions, and when we have very small datasets. 
+
+### c
+
+One alternative to pie charts is side-by-side bars. Wilke favors side-by-side bars when highlighting small changes and differences in data and when visualizing the whole isn't as important. Another alternative is stacked bars, which Wilke favors when there are only two bars in the stack.
+
+### d
+
+```{r}
+as_vegaspec(list(
+  `$schema` = "https://vega.github.io/schema/vega-lite/v5.json",
+  data = list(
+    values = list(
+      list(
+        name = "SPD", 
+        value = 214
+      ),
+      list(
+        name = "FDP", 
+        value = 39
+      ),
+      list(
+        name = "CDU/CSU", 
+        value = 243
+      )
+    )
+  ),
+  mark = "arc",
+  encoding = list(
+    theta = list(
+      field = "value", 
+      type = "quantitative"
+    ),
+    color = list(
+      field = "name", 
+      type = "nominal"
+    )
+  )
+))
+```
+
+
+
 
