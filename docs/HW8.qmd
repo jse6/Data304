@@ -1,0 +1,438 @@
+---
+title: "HW8"
+author: "Joel Essenburg"
+format: html
+embed-resources: true
+code-tools: true
+---
+
+```{r}
+library(vegabrite)
+library(jsonlite)
+library(tidyr)
+library(dplyr)
+```
+
+## Exercise 1
+
+```{r}
+supdem <- jsonlite::fromJSON(
+  "https://calvin-data304.netlify.app/data/swd-lets-practice-ex-2-3.json"
+  )
+```
+
+```{r}
+supdem_long <- supdem %>%
+  pivot_longer(
+    cols = c(capacity, demand), 
+    names_to = "category", 
+    values_to = "value"
+    ) %>%
+  mutate(
+    category = factor(
+      category, 
+      levels = c("demand", "capacity")
+      )
+    )
+```
+
+```{r}
+as_vegaspec(
+  list(
+  `$schema` = "https://vega.github.io/schema/vega-lite/v5.json",
+  data = list(values = supdem_long),
+  mark = "bar",
+  encoding = list(
+    x = list(
+      field = "date",
+      type = "ordinal",
+      axis = list(title = NULL)
+    ),
+    y = list(
+      field = "value",
+      type = "quantitative",
+      axis = list(title = NULL)
+    ),
+    color = list(
+      field = "category",
+      type = "nominal",
+      legend = list(title = "Category"),
+      sort = list("demand", "capacity") 
+    ),
+    xOffset = list(
+      field = "category",
+      sort = list("demand", "capacity") 
+    )
+  )
+))
+```
+
+```{r}
+as_vegaspec(
+  list(
+  `$schema` = "https://vega.github.io/schema/vega-lite/v5.json",
+  data = list(values = supdem_long),
+  mark = "bar",
+  encoding = list(
+    x = list(
+      field = "date", 
+      type = "ordinal", 
+      axis = list(title = NULL)
+      ),
+    y = list(
+      field = "value", 
+      type = "quantitative", 
+      axis = list(title = NULL)
+      ),
+    color = list(
+      field = "category", 
+      type = "nominal", 
+      legend = list(title = "Category"), 
+      sort = list("demand", "capacity")
+    ),
+    order = list(
+      field = "category",
+      type = "nominal"
+    ),
+    size = list(
+      field = "category", 
+      type = "nominal",
+      scale = list(
+        domain = c("demand", "capacity"),
+        range = c(8, 16)
+      ),
+      legend = NULL
+    )
+  )
+))
+```
+
+```{r}
+as_vegaspec(
+  list(
+  `$schema` = "https://vega.github.io/schema/vega-lite/v5.json",
+  data = list(values = supdem_long),
+  layer = list(
+    list(
+      mark = "line",
+      encoding = list(
+        x = list(
+          field = "date",
+          type = "ordinal",
+          axis = list(title = NULL)
+        ),
+        y = list(
+          field = "value",
+          type = "quantitative",
+          axis = list(title = NULL)
+        ),
+        detail = list(field = "date"),  
+        color = list(value = "gray")
+      )
+    ),
+    list(
+      mark = "point",
+      encoding = list(
+        x = list(
+          field = "date",
+          type = "ordinal"
+          ),
+        y = list(
+          field = "value", 
+          type = "quantitative"
+          ),
+        color = list(
+          field = "category", 
+          type = "nominal", 
+          legend = list(title = "Category"),
+          sort = list("demand", "capacity")
+          )
+      )
+    )
+  )
+))
+```
+
+```{r}
+as_vegaspec(
+  list(
+  `$schema` = "https://vega.github.io/schema/vega-lite/v5.json",
+  data = list(values = supdem_long),
+  mark = "line",
+  encoding = list(
+    x = list(
+      field = "date",
+      type = "ordinal",
+      axis = list(title = NULL)
+    ),
+    y = list(
+      field = "value",
+      type = "quantitative",
+      axis = list(title = NULL)
+    ),
+    color = list(
+      field = "category",
+      type = "nominal",
+      legend = list(title = "Category"),
+      sort = list("demand", "capacity")
+    )
+  )
+))
+```
+
+```{r}
+supdem_cap <- supdem %>%
+  mutate(
+    unmet_demand = demand - capacity
+  )
+
+supdem_long_cap <- supdem_cap %>%
+  pivot_longer(
+    cols = c(capacity, unmet_demand),
+    names_to = "category",
+    values_to = "value"
+  ) %>%
+  mutate(
+    category = factor(category, levels = c("capacity", "unmet_demand")) 
+  )
+```
+
+```{r}
+as_vegaspec(
+  list(
+  `$schema` = "https://vega.github.io/schema/vega-lite/v5.json",
+  data = list(values = supdem_long_cap),
+  mark = "bar",
+  encoding = list(
+    x = list(
+      field = "date",
+      type = "ordinal",
+      axis = list(title = NULL)
+    ),
+    y = list(
+      field = "value",
+      type = "quantitative",
+      axis = list(title = NULL)
+    ),
+    color = list(
+      field = "category", 
+      type = "nominal", 
+      legend = list(title = "Category"), 
+      sort = list("unmet_demand", "capacity")
+    ),
+    order = list(
+      field = "category",
+      type = "nominal"
+    )
+  )
+))
+```
+
+```{r}
+as_vegaspec(
+  list(
+  `$schema` = "https://vega.github.io/schema/vega-lite/v5.json",
+  data = list(values = supdem_cap),
+  layer = list(
+    list(
+      mark = "line",
+      encoding = list(
+        x = list(
+          field = "date",
+          type = "ordinal",
+          axis = list(title = NULL)
+        ),
+        y = list(
+          field = "unmet_demand",
+          type = "quantitative",
+          axis = list(title = NULL)
+        )
+      )
+    ),
+    list(
+      mark = list(
+        type = "point", 
+        filled = TRUE
+        ),
+      encoding = list(
+        x = list(
+          field = "date", 
+          type = "ordinal"
+          ),
+        y = list(
+          field = "unmet_demand", 
+          type = "quantitative"
+          ),
+        size = list(
+          value = 60
+          ) 
+      )
+    )
+  )
+))
+```
+
+## Exercise 2
+
+### a
+
+```{r}
+jobs <- jsonlite::fromJSON(
+  "https://cdn.jsdelivr.net/npm/vega-datasets@2.8.0/data/jobs.json"
+  )
+
+jobs_perc <- jobs %>%
+  group_by(job, year, sex) %>%
+  summarise(total_perc = sum(perc))
+```
+
+```{r}
+as_vegaspec(
+  list(
+  `$schema` = "https://vega.github.io/schema/vega-lite/v5.json",
+  data = list(values = jobs_perc),
+  mark = "bar",
+  encoding = list(
+    x = list(
+      field = "year", 
+      type = "ordinal"
+      ),
+    y = list(
+      field = "total_perc", 
+      type = "quantitative"
+      ),
+    color = list(
+      field = "sex", 
+      type = "nominal"
+      )
+  )
+))
+```
+The visualization helps us see how the proportion of men and women working in these occupations changed over time, which is what perc represents.
+
+### b
+
+```{r}
+filtered_jobs <- jobs %>%
+  filter(year %in% c(1850, 1900, 1950, 2000))
+
+filtered_jobs_perc <- jobs_perc %>%
+  filter(year %in% c(1850, 1900, 1950, 2000))
+```
+
+```{r}
+as_vegaspec(
+  list(
+  `$schema` = "https://vega.github.io/schema/vega-lite/v5.json",
+  data = list(values = filtered_jobs_perc),
+  mark = "point",
+  encoding = list(
+    x = list(
+      field = "job", 
+      type = "nominal", 
+      axis = list(labelAngle = 45)
+      ),
+    y = list(
+      field = "total_perc", 
+      type = "quantitative", 
+      axis = list(title = "Percent (%)", format = ".0%")
+      ),
+    row = list(
+      field = "year", 
+      type = "ordinal"
+      )
+  )
+))
+```
+
+### c
+
+```{r}
+as_vegaspec(
+  list(
+  `$schema` = "https://vega.github.io/schema/vega-lite/v5.json",
+  data = list(values = filtered_jobs),
+  mark = "point",
+  encoding = list(
+    x = list(
+      field = "job", 
+      type = "nominal", 
+      axis = list(labelAngle = 45)
+      ),
+    y = list(
+      field = "perc", 
+      type = "quantitative", 
+      axis = list(title = "Percent (%)", format = ".0%")
+    ),
+    color = list(
+      field = "sex", 
+      type = "nominal"
+      ),
+    row = list(
+      field = "year", 
+      type = "ordinal"
+      )
+  )
+))
+```
+
+## Exercise 3
+
+```{r}
+gas_prices <- read.csv("https://calvin-data304.netlify.app/data/pump_price_for_gasoline_us_per_liter.csv")
+gas_prices[,-1] <- lapply(gas_prices[,-1], as.numeric)
+gas_prices_long <- gas_prices %>%
+  pivot_longer(
+    cols = -country,
+    names_to = "year",
+    values_to = "price"
+ ) %>%
+  mutate(
+    year = gsub("X", "", year),
+ ) %>%
+  drop_na()
+
+codes <- read.csv("https://raw.githubusercontent.com/lukes/ISO-3166-Countries-with-Regional-Codes/master/all/all.csv")
+
+combined <- left_join(gas_prices_long, codes, by = c("country" = "name"))
+```
+
+```{r}
+as_vegaspec(
+  list(
+  `$schema` = "https://vega.github.io/schema/vega-lite/v5.json",
+  data = list(values = combined),
+  mark = "line",
+  encoding = list(
+    x = list(
+      field = "year", 
+      type = "ordinal"
+      ),
+    y = list(
+      field = "price", 
+      type = "quantitative"
+      ),
+    color = list(
+      field = "country", 
+      type = "nominal",
+      legend = NULL
+      ),
+    facet = list(
+      field = "region", 
+      type = "nominal",
+      columns = 3
+      )
+  )
+))
+```
+
+
+
+
+
+
+
+
+
+
+
