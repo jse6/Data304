@@ -1,0 +1,225 @@
+---
+title: "HW9"
+author: "Joel Essenburg"
+format: html
+embed-resources: true
+code-tools: true
+---
+
+```{r}
+library(vegabrite)
+library(tidyverse)
+```
+
+## Exercise 1
+
+### a
+
+- there are two different types of color scales: qualitative and sequential
+
+- choropleths are maps of geographic regions colored by data values
+
+- a diverging color scale can be used to visualize the deviation of data values in two directions
+
+### b
+
+Wilke uses concatenation to group all the graphics. It appears that the number of columns is set to 4, since none of the groupings exceed this. 
+
+The most interesting thing I learned from this chapter is about parallel sets, which are used to visualize when proportions are specified accoring to multiple grouping variables, and are the best option when there are more than 2 grouping variables.
+
+### c
+
+- mosaic plot
+
+- treemap
+
+- parallel sets
+
+- density contours
+
+- 2d bins
+
+- hex bins
+
+I found all of these graphs very interesting to look at and would like to learn how to create them. 
+
+### d
+
+```{r}
+countries <- jsonlite::fromJSON(
+  "https://cdn.jsdelivr.net/npm/vega-datasets@2.11.0/data/countries.json"
+  )
+countries <- countries %>% 
+  filter(year == 2000)
+```
+
+```{r}
+as_vegaspec(list(
+  `$schema` = "https://vega.github.io/schema/vega-lite/v5.json",
+  data = list(values = countries),
+  mark = "rect",
+  encoding = list(
+    x = list(
+      bin = list(maxbins = 50),
+      field = "fertility",
+      type = "quantitative"
+    ),
+    y = list(
+      bin = list(maxbins = 50),
+      field = "life_expect",
+      type = "quantitative"
+    ),
+    color = list(
+      aggregate = "count",
+      type = "quantitative"
+    )
+  )
+))
+```
+
+### e
+
+Chapter 18 goes over how to handle overlapping points, including with 2D histograms. One of the things that I learned was that you can better visualize a high concentration of points with 2D histograms, and so I chose one for one of these situations, with fertility and life expectancy. This reduces overplotting, which is when you plot too many points on top of each other. 
+
+## Exercise 2
+
+```{r}
+likert <- tribble(
+  ~number, ~ response, ~count, ~year,
+  5, "strongly agree", 230, "this year",
+  4, "agree", 320, "this year",
+  3, "neither agree nor disagree", 192, "this year",
+  2, "disagree", 95, "this year",
+  1, "strongly disagre", 157, "this year",
+  0, "no response", 52, "this year",
+  5, "strongly agree", 240, "last year",
+  4, "agree", 275, "last year",
+  3, "neither agree nor disagree", 182, "last year",
+  2, "disagree", 125, "last year",
+  1, "strongly disagre", 189, "last year",
+  0, "no response", 32, "last year"
+)
+```
+
+### a
+
+```{r}
+likert <- likert %>%
+  filter(response != "no response") %>%
+  group_by(year) %>%
+  mutate(percentage = count / sum(count) * 100)
+```
+
+```{r}
+as_vegaspec(
+  list(
+    `$schema` = "https://vega.github.io/schema/vega-lite/v5.json",
+    data = list(values = likert),
+    mark = "arc",
+    columns = list(
+      field = "year",
+      type = "ordinal"
+    ),
+    encoding = list(
+      theta = list(
+        field = "percentage", 
+        type = "quantitative"
+        ),
+      color = list(
+        field = "response", 
+        type = "nominal", 
+        scale = list(scheme = "category10")
+      ),
+      column = list(
+        field = "year",
+        type = "nominal",
+        title = NULL
+      )
+    )
+  )
+)
+```
+
+I tried to add labels but I could not figure out how to center them in their respective portions.
+
+### b
+
+```{r}
+as_vegaspec(
+  list(
+    `$schema` = "https://vega.github.io/schema/vega-lite/v5.json",
+    data = list(values = likert),
+    mark = "bar",
+    encoding = list(
+      x = list(
+        field = "count", 
+        type = "quantitative"
+      ),
+      y = list(
+        field = "response", 
+        type = "nominal" 
+      ),
+      yOffset = list(
+        field = "year",
+        type = "nominal"
+      ),
+      color = list(
+        field = "year", 
+        type = "nominal"
+      )
+    )
+  )
+)
+```
+
+### c
+
+The side by side pie charts allow for a better visual of the whole and parts of the whole, but it's more difficult to visualize the difference in year. The grouped bar chart allows for a better comparison between the two years, but it's more difficult to visualize how much of the whole each part takes up. 
+
+## Exercise 3
+
+```{r}
+capitols <- jsonlite::fromJSON(
+  "https://cdn.jsdelivr.net/npm/vega-datasets@2.11.0/data/us-state-capitals.json"
+  )
+```
+
+
+```{r}
+as_vegaspec(
+  list(
+    `$schema` = "https://vega.github.io/schema/vega-lite/v5.json",
+    layer = list(
+      list(
+        data = list(
+          format = list(type = "topojson", feature = "states"),
+          url = "https://cdn.jsdelivr.net/npm/vega-datasets@v1.29.0/data/us-10m.json"
+        ),
+        projection = list(type = "albersUsa"),
+        mark = list(fill = "transparent", stroke = "black", type = "geoshape")
+      ),
+      list(
+        height = 300,
+        width = 450,
+        mark = list(opacity = 0.8, size = 20, type = "circle", color = "red"),
+        encoding = list(
+          longitude = list(field = "lon", type = "quantitative"),
+          latitude = list(field = "lat", type = "quantitative")
+        ),
+        projection = list(type = "albersUsa"),
+        data = list(
+          values = capitols
+        )
+      )
+    )
+  )
+)
+```
+
+
+
+
+
+
+
+
