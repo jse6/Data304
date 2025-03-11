@@ -1,0 +1,399 @@
+---
+title: "Final Portfolio"
+author: "Joel Essenburg"
+format: html
+embed-resources: true
+code-tools: true
+---
+
+```{r include=FALSE}
+library(vegabrite)
+library(tidyverse)
+```
+
+## Exercise 1
+
+### a
+
+One of the plots I like is Alayna's comparing kits plot. Many of the plots have a plethora of colors and facets that take time to read and make out, but this one is simple and to the point. I can immediately see the comparison the plot is trying to make, and I can understand it in a short amount of time.
+
+### b
+
+One of the plots I don't like is Daniel Jin's comparing kits plot. The main thing I don't like about it is that only the lowest facet has the x-axis labels. This makes it hard to read the other two facets, because I have to keep moving my eyes down to the lowest facet to see the labels and then match it with the facets higher up. It makes the plot harder to read, and take longer for me to process.
+
+### c
+
+```{r}
+as_vegaspec(list(
+  `$schema` = "https://vega.github.io/schema/vega-lite/v5.json",
+  data = list(url = "https://calvin-data304.netlify.app/data/twins-genetics-long.json"),
+  title = "Genetic Share of Twins by Pair",
+  height = 400,
+  mark = "point",
+  encoding = list(
+    x = list(
+      field = "pair", 
+      type = "ordinal",
+      title = "Pair",
+      axis = list(labelAngle = 0)
+    ),
+    y = list(
+      field = "genetic share", 
+      type = "quantitative",
+      title = "Genetic Share"
+    ),
+    shape = list(
+      field = "id", 
+      type = "nominal",
+      title = "ID"
+    ),
+    color = list(
+      field = "kit",
+      type = "nominal",
+      title = "Kit"
+    ),
+    tooltip = list(
+      list(field = "pair", type = "ordinal"),
+      list(field = "genetic share", type = "quantitative"),
+      list(field = "id", type = "nominal"),
+      list(field = "kit", type = "nominal")
+    )
+  )
+))
+```
+This graphic shows the genetic similarity between twin pairs. Each point corresponds to a genetic similarity measurement for a specific twin (denoted by shape) within a given pair. The x-axis categorizes twin pairs and the y-axis measures their genetic share, highlighting how closely related they are based on the methodologies of different testing kits. The points are also colored by the DNA kit used. This graphic reveals the variability in genetic similarity between different twins and shows how different twin pairs are genetically similar in differing quantities. 
+
+
+```{r}
+as_vegaspec(list(
+  `$schema` = "https://vega.github.io/schema/vega-lite/v5.json",
+  data = list(url = "https://calvin-data304.netlify.app/data/twins-genetics-long.json"),
+  title = "Genetic Share of Twins by Kit",
+  width = 300,
+  height = 300,
+  mark = "point",
+  encoding = list(
+    x = list(
+      field = "kit", 
+      type = "nominal",
+      title = "Kit",
+      axis = list(labelAngle = 0)
+    ),
+    y = list(
+      field = "genetic share", 
+      type = "quantitative",
+      title = "Genetic Share"
+    ),
+    shape = list(
+      field = "id", 
+      type = "nominal",
+      title = "ID"
+    ),
+    color = list(
+      field = "pair",
+      type = "ordinal",
+      title = "Pair",
+      scale = list(scheme = "category10")
+    ),
+    tooltip = list(
+      list(field = "kit", type = "nominal"),
+      list(field = "genetic share", type = "quantitative"),
+      list(field = "id", type = "nominal"),
+      list(field = "pair", type = "ordinal")
+    )
+  )
+))
+```
+
+This graphic shows how different DNA testing kits report genetic similarity between twin pairs. The x-axis represents the DNA testing kit used, and the y-axis measures their genetic share. Each point corresponds to a specific twin, with different shapes indicating the individual in the pair. This graphic highlights potential discrepancies in genetic similarity estimates across testing providers, suggesting that the methodology and algorithms may influence reported results. 
+
+## Exercise 2
+
+There are several issues with this graphic. First, the y-axis appears to be proportion, but for none of the months does it add up to 1. Since it doesn't actually appear to be parts of a whole, I can remove the stacked bars and instead facet by type of touchpoint. This way, the difference in types of touchpoints can be compared over time. In addition, the x-axis labels are not evenly spread out, and they are horizontal, which makes them take up more space. This can be fixed by switching the x and y axes, so that date is on the y-axis and can fit while being horizontal. Finally, the labels for total touchpoints are unnecessary and get in the way, so I will remove those. 
+
+```{r}
+touchpoints <- read.csv("https://calvin-data304.netlify.app/data/swd-lets-practice-ex-5-03.csv")
+touchpoints_long <- touchpoints %>%
+  pivot_longer(cols = -Date, names_to = "Type", values_to = "Touchpoints") %>%
+  mutate(Type = case_when(
+    Type == "Phone.Touchpoints" ~ "Phone",
+    Type == "Chat.Touchpoints" ~ "Chat",
+    Type == "Email.Touchpoints" ~ "Email"
+  )
+)
+```
+
+```{r}
+as_vegaspec(list(
+  `$schema` = "https://vega.github.io/schema/vega-lite/v5.json",
+  data = list(values = touchpoints_long),
+  mark = "bar",
+  encoding = list(
+    x = list(
+      field = "Touchpoints", 
+      type = "quantitative"
+    ),
+    y = list(
+      field = "Date", 
+      type = "ordinal", 
+      axis = list(title = "Month")
+    ),
+    color = list(
+      field = "Type",
+      type = "nominal",
+      legend = NULL
+    ),
+    tooltip = list(
+      list(field = "Touchpoints", type = "quantitative"),
+      list(field = "Date", type = "ordinal"),
+      list(field = "Type", type = "nominal")
+    ),
+    facet = list(
+      field = "Type", 
+      type = "nominal", 
+      header = list(title = "Touchpoint Type"))
+    )
+))
+```
+
+## Exercise 3
+
+### b
+
+```{r}
+tanzania <- read.csv("Tanzania.csv")
+tanzania_long <- tanzania %>%
+  pivot_longer(cols = c(Fertility_Rate, Contraception_Use, Unmet_Need),
+               names_to = "Indicator",
+               values_to = "Percentage of Women") %>%
+  mutate(Indicator = case_when(
+    Indicator == "Fertility_Rate" ~ "Fertility Rate",
+    Indicator == "Contraception_Use" ~ "Contraception Use",
+    Indicator == "Unmet_Need" ~ "Unmet Need"
+  )
+)
+```
+
+```{r}
+as_vegaspec(list(
+  `$schema` = "https://vega.github.io/schema/vega-lite/v5.json",
+  data = list(values = tanzania_long),
+  width = 600,
+  height = 300,
+  layer = list(
+    list( 
+      mark = "line",
+      encoding = list(
+        x = list(
+          field = "Year",
+          type = "ordinal",
+          axis = list(labelAngle = 0)
+        ),
+        y = list(
+          field = "Percentage of Women",
+          type = "quantitative"
+        ),
+        color = list(
+          field = "Indicator", 
+          type = "nominal",
+          legend = list(title = NULL, labelFontSize = 15)
+        )
+      )
+    ),
+    list(
+      mark = list(type = "point", filled = TRUE),
+      encoding = list(
+        x = list(
+          field = "Year",
+          type = "ordinal"
+        ),
+        y = list(
+          field = "Percentage of Women",
+          type = "quantitative"
+        ),
+        color = list(
+          field = "Indicator", 
+          type = "nominal"
+        ),
+        tooltip = list(
+          list(field = "Year", type = "ordinal"),
+          list(field = "Percentage of Women", type = "quantitative"),
+          list(field = "Indicator", type = "nominal")
+        )
+      )
+    )
+  )
+))
+```
+### c
+
+This graphic shows the trends in fertility rates, contraception use, and unmet need for women over the span of several DHS surveys. The trend for fertility rates only covers women ages 15-49, however. From 1991 to 2016, the fertility rate slowly and steadily decreased, dropping from 6.2% to 5.2%. In contrast, contraception use saw a significant increase, rising from 5.9% to 38.4%, indicating a greater access to contraceptive methods. Meanwhile, unmet need remained relatively stable, hovering from around 22% to 27%, showing that while contraceptive use has improved, there is still a significant gap in meeting the demand for family planning services. 
+
+## Exercise 4
+
+### a
+
+```{r}
+pitch_arsenals <- read.csv("pitch_arsenals.csv")
+pitch_arsenal_stats <- read.csv("pitch-arsenal-stats.csv")
+colnames(pitch_arsenals)[2] <- "player_id"
+pitch_arsenals_long <- pitch_arsenals %>%
+  pivot_longer(cols = starts_with("ff_avg_speed"):starts_with("sv_avg_speed"),
+               names_to = "pitch_name", values_to = "avg_speed", 
+               values_drop_na = TRUE) %>%
+  mutate(pitch_name = case_when(
+    grepl("ff_", pitch_name) ~ "4-Seam Fastball",
+    grepl("si_", pitch_name) ~ "Sinker",
+    grepl("fc_", pitch_name) ~ "Cutter",
+    grepl("sl_", pitch_name) ~ "Slider",
+    grepl("ch_", pitch_name) ~ "Changeup",
+    grepl("cu_", pitch_name) ~ "Curveball",
+    grepl("fs_", pitch_name) ~ "Split-Finger",
+    grepl("kn_", pitch_name) ~ "Knuckleball",
+    grepl("st_", pitch_name) ~ "Sweeper",
+    grepl("sv_", pitch_name) ~ "Slurve"
+  )
+)
+pitches <- inner_join(pitch_arsenals_long, pitch_arsenal_stats, by = c("player_id", "pitch_name"))
+pitches <- pitches %>%
+  rename(Name = `last_name..first_name.x`)
+```
+
+```{r}
+as_vegaspec(list(
+  `$schema` = "https://vega.github.io/schema/vega-lite/v5.json",
+  hconcat = list(
+    list(
+      data = list(values = pitches),
+      width = 300,
+      height = 300,
+      mark = "point",
+      encoding = list(
+        x = list(
+          field = "avg_speed",
+          type = "quantitative",
+          title = "Average Velocity",
+          scale = list(domain = c(70, 105))
+        ),
+        y = list(
+          field = "whiff_percent",
+          type = "quantitative",
+          title = "Whiff Rate",
+          scale = list(domain = c(0, 60))
+        ),
+        color = list(
+          condition = list(
+            test = "datum.Name == 'Skubal, Tarik' || datum.Name == 'Sale, Chris'",
+            value = "red"
+          ),
+          value = "skyblue" 
+        ),
+        tooltip = list(
+          list(field = "Name", type = "nominal"),
+          list(field = "pitch_name", type = "nominal"),
+          list(field = "avg_speed", type = "quantitative"),
+          list(field = "whiff_percent", type = "quantitative")
+        )
+      ),
+      transform = list(
+        list(filter = "datum.pitch_name == pitch_type_param")
+      )
+    ),
+    list(
+      data = list(values = pitches),
+      width = 300,
+      height = 300,
+      mark = "point",
+      encoding = list(
+        x = list(
+          field = "avg_speed",
+          type = "quantitative",
+          title = "Average Velocity",
+          scale = list(domain = c(70, 105))
+        ),
+        y = list(
+          field = "hard_hit_percent",
+          type = "quantitative",
+          title = "Hard Hit Rate",
+          scale = list(domain = c(10, 65))
+        ),
+        color = list(
+          condition = list(
+            test = "datum.Name == 'Skubal, Tarik' || datum.Name == 'Sale, Chris'",
+            value = "red" 
+          ),
+          value = "skyblue" 
+        ),
+        tooltip = list(
+          list(field = "Name", type = "nominal"),
+          list(field = "pitch_name", type = "nominal"),
+          list(field = "avg_speed", type = "quantitative"),
+          list(field = "hard_hit_percent", type = "quantitative")
+        )
+      ),
+      transform = list(
+        list(filter = "datum.pitch_name == pitch_type_param")
+      )
+    )
+  ),
+  params = list(
+    list(
+      name = "pitch_type_param",
+      value = "4-Seam Fastball",
+      bind = list(
+        name = "Pitch Type: ",
+        options = c("4-Seam Fastball", "Sinker", "Cutter", "Slider", "Changeup", "Curveball", "Split-Finger", "Knuckleball", "Sweeper", "Slurve"),
+        input = "select"
+      )
+    )
+  )
+))
+```
+
+### b
+
+My graphic is two concatenated scatter plots, with one that shows the average velocity and whiff rates, and one that shows the avergage velocity and hard hit rates of pitches thrown in the MLB during the 2024 regular season. Whiff rate is the percentage of pitches thrown that were swung and missed at, and hard hit rate is the percentage of balls put into play that had an exit velocity of at least 95 mph. The data is filtered so that the only pitches included are the ones thrown at least 100 times during the season. I also added a drop down menu to change the pitch type that is being viewed. I originally faceted by pitch type, but since there are 10 different pitch types it became way too many facets, and the axes were far away from some of the facets so it was hard to read. I colored two pitchers: Chris Sale and Tarik Skubal, because they were the National League and American League Cy Young award winners, respectively. The final main decision I made was to have fixed scales for both the x and y axes. This way the difference in pitches when a different pitch is selected from the drop down is easier to notice and visualize. 
+
+## Exercise 5
+
+### a
+
+I used an encoding channel other than x or y in all of my graphics. I used color and shape in Exercise 1, color and facet in Exercise 2, and color in Exercise 3.
+
+### b
+
+I used layers in Exercise 3, with lines and points layered together. 
+
+### c
+
+I used facets in Exercise 2.
+
+### d
+
+I used concatenation in Exercise 4 to put two scatterplots side by side. One compares average pitch velocity and whiff rate, and the other compares average pitch velocity and hard hit rate. 
+
+### e
+
+In Exercise 1, I changed the color scale to be category10 scheme for the second graphic. In Exercise 2, I removed the legend title for the color channel, and changed the header for the facet channel. In Exercise 3, I also removed the legend title for the color channel. 
+
+### f
+
+I used tooltips for my graphics in Exercise 1, Exercise 2, Exercise 3, and Exercise 4.
+
+### g
+
+I added a drop down interaction in Exercise 4. 
+
+## Exercise 6
+
+### a
+
+In Exercise 3, I figured out how to change the font size of the legend to make it easier to read. 
+
+In Exercise 5, I figured how to add color to specific data points, in order to highlight the two Cy Young award winning pitchers in 2024 out of the many pitchers. 
+
+### b
+
+I took Knaflic's advice about clutter. On page 73, Knaflic advises to reduce clutter because it can make a graphic overwhelming to look at and hide the actual message the graphic is trying to show. I took his advice in Exercise 5, by making a drop down instead of facets. Faceting would have created 10 separate plots, which were overhwelming to try and comprehend at the same time, and was unnecessary as I was trying to compare a relationship between two statistics, with the option of viewing it for different pitches. 
+
+I took Wilke's advice about how to deal with long labels. In section 6.1, Wilke suggests that when x-axis labels are long enough to overlap, it's better to just swap the x and y axes. I took his advice in Exercise 2, where I swapped the x and y axes since the dates were relatively long labels and overlapped when they were on the x-axis.

@@ -1,0 +1,13 @@
+---
+title: "data"
+format: html
+embed-resources: true
+---
+
+## Data Resources
+
+[Tanzania](Tanzania.csv)
+
+[Pitch Arsenals](pitch_arsenals.csv)
+
+[Pitch Arsenal Stats](pitch-arsenal-stats.csv)

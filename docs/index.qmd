@@ -15,3 +15,7 @@ embed-resources: true
 [HW8](HW8.html)
 
 [HW9](HW9.html)
+
+[Final Portfolio](Final Portfolio.html)
+
+[Data](data.html)
